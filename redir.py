@@ -17,7 +17,7 @@ port = 80 if len(sys.argv) == 2 else int(sys.argv[2])
 
 print('Serving redirects to https from port ' + str(port) + '\n'
       'Press Control+C for interrupting')
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind(('', port))
 sock.listen(5)  # default queue size on most systems
@@ -30,6 +30,9 @@ while True:
                            'Location: https://' + host + path + '\n' +
                            '\n' +
                            'Redirecting to https version of ' + host)
-        connection.close()
     except KeyboardInterrupt:
         break
+    except IndexError:
+      pass  # ignore malformed packets
+    finally:
+        connection.close()
